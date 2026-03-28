@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marvel Notes App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --marvel-red: #ED1D24;
+      --marvel-dark: #151515;
+      --marvel-black: #000000;
+      --marvel-grey: #2A2A2A;
+      --marvel-text: #FFFFFF;
+    }
+
+    body {
+      font-family: 'Roboto Condensed', sans-serif;
+      background-color: var(--marvel-black);
+      background-image: radial-gradient(circle at top, var(--marvel-grey) 0%, var(--marvel-black) 70%);
+      color: var(--marvel-text);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    /* --- Animations --- */
+    @keyframes slideDown {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* --- Header Styling --- */
+    h1 {
+      font-family: 'Bangers', cursive;
+      background-color: var(--marvel-red);
+      color: white;
+      display: inline-block;
+      padding: 5px 20px;
+      margin-bottom: 30px;
+      font-size: 3.5rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.1);
+      animation: slideDown 0.6s ease-out;
+      border-radius: 2px;
+    }
+
+    /* --- Inputs & Main Buttons --- */
+    input, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--marvel-dark);
+      border: 2px solid #444;
+      color: var(--marvel-text);
+      margin-bottom: 15px;
+      padding: 12px;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 1.1rem;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      animation: slideDown 0.8s ease-out;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--marvel-red);
+      box-shadow: 0 0 8px rgba(237, 29, 36, 0.4);
+    }
+
+    ::placeholder {
+      color: #777;
+    }
+
+    button {
+      background-color: var(--marvel-red);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-family: 'Bangers', cursive;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: transform 0.2s, background-color 0.2s;
+      text-transform: uppercase;
+      animation: slideDown 1s ease-out;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background-color: #ff2a31;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    /* Search Bar Specific */
+    #search {
+      border-radius: 25px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #444;
+    }
+
+    /* --- Note Cards --- */
+    #notes-container {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .note {
+      background: var(--marvel-dark);
+      border-left: 6px solid var(--marvel-red);
+      padding: 20px;
+      border-radius: 6px;
+      text-align: left;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .note:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(237, 29, 36, 0.2);
+    }
+
+    .note h3 {
+      margin: 0 0 10px 0;
+      color: white;
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+    }
+
+    .note p {
+      color: #CCC;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+
+    /* --- Read More Button Specifics --- */
+    .read-more-btn {
+      background: none;
+      border: none;
+      color: var(--marvel-red);
+      font-family: 'Bangers', cursive;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      animation: none; /* Prevents the slideDown animation from reapplying */
+      display: inline-block;
+    }
+
+    .read-more-btn:hover {
+      background: none;
+      transform: none;
+      color: #ff2a31;
+      text-decoration: underline;
+    }
+
+    /* --- Action Buttons (Edit/Delete) --- */
+    .note-actions {
+      display: flex;
+      gap: 30px;
+    }
+
+    .note-actions button {
+      font-size: 1rem;
+      padding: 6px 12px;
+      border-radius: 5px;
+    }
+
+    .btn-edit {
+      background-color: #444;
+    }
+    .btn-edit:hover {
+      background-color: #666;
+    }
+
+    .btn-delete {
+      background-color: transparent;
+      border: 2px solid var(--marvel-red);
+      color: var(--marvel-red);
+    }
+    .btn-delete:hover {
+      background-color: var(--marvel-red);
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Marvel Notes</h1>
+
+    <input type="text" id="search" placeholder="Search the Multiverse by Title...">
+
+    <div class="note-input">
+      <input 
+    type="text" 
+    id="title" 
+    placeholder="Mission Title" 
+    required
+  />
+
+  <textarea 
+    id="content" 
+    placeholder="Mission details..." 
+    required
+  ></textarea>
+
+      <button onclick="addNote()">add Note</button>
+    </div>
+
+    <div id="notes-container"></div>
+  </div>
+
+  <script>
+    // STORAGE
+
+    function getNotes() {
+      return JSON.parse(localStorage.getItem("notes")) || [];
+    }
+
+    function saveNotes(notes) {
+      localStorage.setItem("notes", JSON.stringify(notes));
+    }
+
+    function addNote() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      if (!title || !content) {
+          alert("Hold up, Avenger! Please fill all fields.");
+          return;
+      }
+
+      const notes = getNotes();
+      const newNote = {
+          id: Date.now(),
+          title,
+          content
+      };
+
+      
+      notes.unshift(newNote);
+      saveNotes(notes);
+
+      
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+
+      displayNotes(getNotes());
+    }
+
+    function deleteNote(id) {
+      let notes = getNotes();
+      notes = notes.filter(note => note.id !== id);
+      saveNotes(notes);
+      displayNotes(getNotes()); 
+      
+    // Clear search to show all notes if it had been deleted while searching
+      document.getElementById("search").value = ""; 
+      displayNotes(getNotes());
+    }
+
+    function editNote(id) {
+      let notes = getNotes();
+      const note = notes.find(n => n.id === id);
+
+      
+      document.getElementById("title").value = note.title;
+      document.getElementById("content").value = note.content;
+
+      // Scrolling will be smmoth
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Remove the old note 
+      deleteNote(id);
+    }
+
+    //DISPLAY & TRUNCATE LOGIC
+
+    function displayNotes(notes) {
+      const container = document.getElementById("notes-container");
+      container.innerHTML = "";
+
+      notes.forEach((note, index) => {
+          const div = document.createElement("div");
+          div.classList.add("note");
+          
+          // animation like pop
+          div.style.animationDelay = `${index * 0.05}s`;
+
+          
+          const maxLength = 150; //  limit of a character before hiding text
+          let displayContent = note.content;
+          let readMoreBtnHTML = '';
+
+          if (note.content.length > maxLength) {
+              const shortText = note.content.substring(0, maxLength) + "...";
+              // wrap up short and full text
+              displayContent = `
+                <span id="short-${note.id}">${shortText}</span>
+                <span id="full-${note.id}" style="display: none;">${note.content}</span>
+              `;
+              readMoreBtnHTML = `<button class="read-more-btn" id="btn-${note.id}" onclick="toggleReadMore(${note.id})">Read More</button><br>`;
+          }
+
+          div.innerHTML = `
+              <h3>${note.title}</h3>
+              <p>${displayContent}</p>
+              ${readMoreBtnHTML}
+              <div class="note-actions">
+                <button class="btn-edit" onclick="editNote(${note.id})">🔄Update</button>
+                <button class="btn-delete" onclick="deleteNote(${note.id})">🗑️remove</button>
+              </div>
+          `;
+
+          container.appendChild(div);
+      });
+    }
+
+    //toggle function
+    
+    function toggleReadMore(id) {
+        const shortText = document.getElementById(`short-${id}`);
+        const fullText = document.getElementById(`full-${id}`);
+        const btn = document.getElementById(`btn-${id}`);
+
+        if (fullText.style.display === "none") {
+            // Expand the text
+            shortText.style.display = "none";
+            fullText.style.display = "inline";
+            btn.innerText = "Show Less";
+        } else {
+            // Collapse the text
+            shortText.style.display = "inline";
+            fullText.style.display = "none";
+            btn.innerText = "Read More";
+        }
+    }
+
+    //  INITIAL LOAD & SEARCH
+
+    window.onload = function () {
+      displayNotes(getNotes());
+
+      // Searches by title ONLY (search feature)
+      document.getElementById("search").addEventListener("input", function () {
+          const query = this.value.toLowerCase();
+          const notes = getNotes();
+
+          const filtered = notes.filter(note =>
+              note.title.toLowerCase().includes(query)
+          );
+
+          displayNotes(filtered);
+      });
+    };
+  </script>
+</body>
+</html>
